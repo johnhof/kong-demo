@@ -2,6 +2,10 @@ version: "3"
 
 services:
 
+  #
+  ## Kong
+  #
+
   kong:
     image: kong:0.11.2
     entrypoint: 
@@ -14,10 +18,12 @@ services:
       - 10001:8443
       - 10002:8001
       - 10003:8444
-    links:
-      - postgres:postgres
     volumes:
       - ${PWD}/.data/kong:/usr/local/kong
+
+  #
+  ## Konga
+  #
 
   konga: 
     image: pantsel/konga:latest
@@ -28,12 +34,13 @@ services:
     env_file: config/konga.env
     ports:
       - 12000:1337
-    links:
-      - postgres:postgres
-      - kong:kong
     volumes:
       - ${PWD}/.data/konga:/kongadata
-
+  
+  #
+  ## Postgres
+  #
+  
   postgres:
     image: postgres:10
     env_file: config/postgres.env
@@ -41,3 +48,41 @@ services:
       - 11000:8080
     volumes:
       - ${PWD}/.data/postgres:/var/lib/postgresql/data
+
+  #
+  # Service cloud
+  #
+
+  # Echo instances
+  service_echo_0: 
+    build: ./services
+    environment:
+      - RUN_SERVICE=echo
+      - SERVICE_PORT=8080
+  service_echo_1: 
+    build: ./services
+    environment:
+      - RUN_SERVICE=echo
+      - SERVICE_PORT=8080
+  service_echo_2: 
+    build: ./services
+    environment:
+      - RUN_SERVICE=echo
+      - SERVICE_PORT=8080
+
+  # Hello instances
+  service_hello_0: 
+    build: ./services
+    environment:
+      - RUN_SERVICE=hello
+      - SERVICE_PORT=8080
+  service_hello_1: 
+    build: ./services
+    environment:
+      - RUN_SERVICE=hello
+      - SERVICE_PORT=8080
+  service_hello_2: 
+    build: ./services
+    environment:
+      - RUN_SERVICE=hello
+      - SERVICE_PORT=8080
