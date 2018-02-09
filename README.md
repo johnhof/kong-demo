@@ -43,7 +43,3 @@ Persistent data is mounted to `.data/**/*` when docker-compose is run. deleting 
 # Dev notes
 
 - The Kong version is limited by what is currently supported by Konga
-
-# TODO
-
-- [ ] Add trivial services to demonstrate gateway functionality
