@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+
+  kong:
+    image: kong:0.11.2
+    entrypoint: 
+      - /bin/bash 
+      - -c 
+      - "echo \"Sleeping [10] for postgres startup\" && sleep 10 && echo \"Starting Kong\" && kong start"
+    env_file: config/kong.env
+    ports: 
+      - 10000:8000
+      - 10001:8443
+      - 10002:8001
+      - 10003:8444
+    links:
+      - postgres:postgres
+    volumes:
+      - ${PWD}/.data/kong:/usr/local/kong
+
+  konga: 
+    image: pantsel/konga:latest
+    entrypoint: 
+      - /bin/bash 
+      - -c 
+      - "echo \"Sleeping [10] for postgres startup\" && sleep 10 && echo \"Starting Konga\"&&npm run production"
+    env_file: config/konga.env
+    ports:
+      - 12000:1337
+    links:
+      - postgres:postgres
+      - kong:kong
+    volumes:
+      - ${PWD}/.data/konga:/kongadata
+
+  postgres:
+    image: postgres:10
+    env_file: config/postgres.env
+    ports: 
+      - 11000:8080
+    volumes:
+      - ${PWD}/.data/postgres:/var/lib/postgresql/data

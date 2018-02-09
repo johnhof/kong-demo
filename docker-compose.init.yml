@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+
+  kong:
+    image: kong:0.11.2
+    entrypoint: 
+      - /bin/bash 
+      - -c 
+      - "echo \"Sleeping [15] for postgres startup\" && sleep 15 && kong migrations up"
+    env_file: config/kong.env
+
+  konga: 
+    image: pantsel/konga:latest
+    entrypoint: 
+      - /bin/bash 
+      - -c 
+      - "echo \"Sleeping [15] for postgres startup\" && sleep 15 && echo \"Starting konga\" && npm start"
+    env_file: config/konga.env
+
+  postgres:
+    image: postgres:10
+    env_file: config/postgres.env
+    volumes:
+      - ${PWD}/.data/postgres:/var/lib/postgresql/data
